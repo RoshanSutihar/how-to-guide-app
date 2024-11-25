@@ -128,14 +128,14 @@ fun GradesApp(vm: GradesModel) {
                     }
                 }
 
-                // bottom nav end
+
             }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Correct padding applied here
+                .padding(innerPadding)
         ) {
             NavHost(
                 navController = navController,

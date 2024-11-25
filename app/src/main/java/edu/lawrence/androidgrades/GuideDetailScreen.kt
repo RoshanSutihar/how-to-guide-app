@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -37,8 +38,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,19 +80,19 @@ fun GuideDetailScreen(
         }
     ) { paddingValues ->
 
-        // Column that holds the content inside the Scaffold
+
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .imePadding() // Ensures the content is adjusted when the keyboard appears
+                .imePadding()
         ) {
-            // LazyColumn for displaying the comments
+
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f) // Ensures it takes up available space
-                    .padding(bottom = 8.dp) // Prevents clipping at the bottom
+                    .weight(1f)
+                    .padding(bottom = 8.dp)
             ) {
                 items(commentsList) { comment ->
                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -107,15 +106,14 @@ fun GuideDetailScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
-                        HorizontalDivider(thickness = 2.dp)
+                        Divider(thickness = 2.dp)
                     }
                 }
             }
 
-            // Column for the input fields and Add Comment button
+
             Column(
-                modifier = Modifier
-                    .padding(bottom = 16.dp) // Padding for the bottom part of the form
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 // Heading TextField
                 TextField(
@@ -147,12 +145,12 @@ fun GuideDetailScreen(
                             vm.addCommentToGuide(guideId, heading, narration)
                             heading = ""
                             narration = ""
-                            focusManager.clearFocus() // Dismiss the keyboard
+                            focusManager.clearFocus()
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Add Comment")
+                    Text("Save")
                 }
             }
         }

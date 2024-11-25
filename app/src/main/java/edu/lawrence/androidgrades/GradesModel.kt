@@ -57,9 +57,9 @@ class GradesModel(application: Application): AndroidViewModel(application) {
             withContext(Dispatchers.IO) {
                 try {
                     val guide = Guides(guideName = guideName)
-                    val guideId = dao.insertGuide(guide) // This returns the new guide ID
+                    val guideId = dao.insertGuide(guide)
 
-                    loadGuides() // Reload guides (if needed)
+                    loadGuides()
 
                     withContext(Dispatchers.Main) {
                         callback(true, "Guide added successfully.", guideId.toInt()) // Pass the newly inserted guideId
@@ -79,13 +79,13 @@ class GradesModel(application: Application): AndroidViewModel(application) {
     fun getCommentsForGuide(guideId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                // Fetch the comments from your DAO/repository
+
                 val commentListForGuide = dao.getCommentsByGuideId(guideId)
 
-                // Update narrationList with the fetched comments
+
                 _narrationList.value = commentListForGuide
 
-                // Optionally, set the first narration (if any)
+
                 if (commentListForGuide.isNotEmpty()) {
                     firstNarration.value = commentListForGuide[0]
                 }
@@ -99,13 +99,13 @@ class GradesModel(application: Application): AndroidViewModel(application) {
             val newListGuide = listGuides(guideId = guideId, heading = heading, narration = narration)
             withContext(Dispatchers.IO) {
                 try {
-                    // Insert the new comment into the database
+
                     dao.insertListGuide(newListGuide)
 
-                    // Fetch the updated list of comments for the guide
+
                     val updatedComments = dao.getCommentsByGuideId(guideId)
 
-                    // Update the narrationList with the latest comments
+
                     _narrationList.value = updatedComments
                 } catch (e: Exception) {
                     // Handle the error (optional)
