@@ -52,25 +52,29 @@ class GradesModel(application: Application): AndroidViewModel(application) {
     }
 
 
-    fun addGuide(guideName: String, callback: (Boolean, String) -> Unit) {
+    fun addGuide(guideName: String, callback: (Boolean, String, Int?) -> Unit) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-
                     val guide = Guides(guideName = guideName)
-                    dao.insertGuide(guide)
+                    val guideId = dao.insertGuide(guide) // This returns the new guide ID
 
-                    loadGuides()
+                    loadGuides() // Reload guides (if needed)
 
-
-                    callback(true, "Guide added successfully.")
+                    withContext(Dispatchers.Main) {
+                        callback(true, "Guide added successfully.", guideId.toInt()) // Pass the newly inserted guideId
+                    }
                 } catch (e: Exception) {
-
-                    callback(false, "Failed to add guide: ${e.message}")
+                    withContext(Dispatchers.Main) {
+                        callback(false, "Failed to add guide: ${e.message}", null)
+                    }
                 }
             }
         }
     }
+
+
+
 
     fun getCommentsForGuide(guideId: Int) {
         viewModelScope.launch {

@@ -150,9 +150,14 @@ fun GradesApp(vm: GradesModel) {
                     val guideName = backStackEntry.arguments?.getString("guideName") ?: "Unknown Guide"
                     GuideDetailScreen(vm, guideId, guideName, navController)
                 }
-                composable(route = "Add Guide") {
-                    GuideScreen(vm, modifier = Modifier.fillMaxSize())
+                composable(route = "Add Guide") { navBackStackEntry ->
+                    GuideScreen(
+                        vm = vm,
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
+
             }
         }
     }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -35,6 +37,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
+
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuideDetailScreen(
@@ -44,7 +50,6 @@ fun GuideDetailScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-
     LaunchedEffect(guideId) {
         vm.getCommentsForGuide(guideId)
     }
@@ -76,18 +81,19 @@ fun GuideDetailScreen(
         }
     ) { paddingValues ->
 
+        // Column that holds the content inside the Scaffold
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp) // Reduced vertical padding
-                .imePadding()
+                .padding(horizontal = 16.dp)
+                .imePadding() // Ensures the content is adjusted when the keyboard appears
         ) {
-
+            // LazyColumn for displaying the comments
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = 8.dp) // Reduced padding
+                    .weight(1f) // Ensures it takes up available space
+                    .padding(bottom = 8.dp) // Prevents clipping at the bottom
             ) {
                 items(commentsList) { comment ->
                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -106,41 +112,48 @@ fun GuideDetailScreen(
                 }
             }
 
-            TextField(
-                value = heading,
-                onValueChange = { heading = it },
-                label = { Text("Heading") },
+            // Column for the input fields and Add Comment button
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = narration,
-                onValueChange = { narration = it },
-                label = { Text("Narration") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                maxLines = 3
-            )
-            Spacer(modifier = Modifier.height(2.dp)) // Reduced spacer height
-
-            Button(
-                onClick = {
-                    if (heading.isNotBlank() && narration.isNotBlank()) {
-                        vm.addCommentToGuide(guideId, heading, narration)
-
-                        heading = ""
-                        narration = ""
-
-                        focusManager.clearFocus()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+                    .padding(bottom = 16.dp) // Padding for the bottom part of the form
             ) {
-                Text("Add Comment")
+                // Heading TextField
+                TextField(
+                    value = heading,
+                    onValueChange = { heading = it },
+                    label = { Text("Heading") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Narration TextField
+                TextField(
+                    value = narration,
+                    onValueChange = { narration = it },
+                    label = { Text("Narration") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    maxLines = 3
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Add Comment Button
+                Button(
+                    onClick = {
+                        if (heading.isNotBlank() && narration.isNotBlank()) {
+                            vm.addCommentToGuide(guideId, heading, narration)
+                            heading = ""
+                            narration = ""
+                            focusManager.clearFocus() // Dismiss the keyboard
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Add Comment")
+                }
             }
         }
     }

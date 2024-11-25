@@ -28,7 +28,7 @@ data class listGuides(
 interface GradesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGuide(guide: Guides)
+    suspend fun insertGuide(guide: Guides): Long
 
     @Query("SELECT * FROM Guides ORDER BY guideId ASC")
     suspend fun getAllGuides(): List<Guides>

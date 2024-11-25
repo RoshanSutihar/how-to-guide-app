@@ -14,13 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import edu.lawrence.androidgrades.GradesModel
-
-
 @Composable
-fun GuideScreen(vm: GradesModel, modifier: Modifier = Modifier) {
+fun GuideScreen(vm: GradesModel, navController: NavController, modifier: Modifier = Modifier) {
     var guideName by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }  // Error state
-    var successMessage by remember { mutableStateOf<String?>(null) }  // Success message state
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -30,10 +28,8 @@ fun GuideScreen(vm: GradesModel, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
         Text("Add Guide", style = MaterialTheme.typography.headlineMedium)
 
-        // Input field for guide name
         OutlinedTextField(
             value = guideName,
             onValueChange = { guideName = it },
@@ -41,29 +37,22 @@ fun GuideScreen(vm: GradesModel, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Display error message if there is any
         errorMessage?.let {
             Text(it, color = MaterialTheme.colorScheme.error)
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // Display success message if the guide was added successfully
-        successMessage?.let {
-            Text(it, color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Save Button
         Button(
             onClick = {
                 if (guideName.isNotBlank()) {
-                    // Call ViewModel's addGuide function
-                    vm.addGuide(guideName) { success, message ->
+
+                    vm.addGuide(guideName) { success, message, guideId ->
                         if (success) {
-                            successMessage = message
-                            guideName = ""  // Clear the input field
+                            guideId?.let {
+                                navController.navigate("guideDetail/$guideId/$guideName")
+                            }
                         } else {
                             errorMessage = message
                         }
