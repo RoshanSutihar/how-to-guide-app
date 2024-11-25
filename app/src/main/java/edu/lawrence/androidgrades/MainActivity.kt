@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
@@ -86,56 +87,76 @@ fun GradesApp(vm: GradesModel) {
     val items = listOf("Guides", "Add Guide")
     val icons = listOf(Icons.Filled.Menu, Icons.Filled.Add)
 
-    // Scaffold with conditional bottom bar
+
     Scaffold(
         bottomBar = {
-            // Show bottom navigation only if not on the GuideDetailScreen
-            if (navController.currentDestination?.route != "guideDetail/{guideId}") {
+            if (navController.currentDestination?.route != "guideDetail/{guideId}/{guideName}") {
                 BottomNavigation(
                     backgroundColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
                 ) {
                     items.forEachIndexed { index, item ->
                         BottomNavigationItem(
                             icon = { Icon(icons[index], contentDescription = item) },
                             label = { Text(item) },
                             selected = navController.currentDestination?.route == item,
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
+                            selectedContentColor = MaterialTheme.colorScheme.onPrimary,
                             unselectedContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                             onClick = {
-                                navController.navigate(item) {
-                                    // Ensures correct navigation behavior
-                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
+                                if (item == "Guides") {
+                                    if (navController.currentDestination?.route != "Guides") {
+                                        navController.navigate("Guides") {
+                                            popUpTo(navController.graph.startDestinationId) { inclusive = false }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    } else {
+                                        navController.popBackStack(route = "Guides", inclusive = false)
+                                    }
+                                } else {
+                                    navController.navigate(item) {
+                                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
                             }
                         )
                     }
                 }
+
+                // bottom nav end
             }
         }
     ) { innerPadding ->
-        val modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-
-        // Navigation setup with routes
-        NavHost(navController = navController, startDestination = "Guides") {
-            composable(route = "Guides") {
-                vm.loadGuides()
-                GuideListScreen(vm, navController, modifier)
-            }
-            composable(route = "guideDetail/{guideId}/{guideName}") { backStackEntry ->
-                val guideId = backStackEntry.arguments?.getString("guideId")?.toInt() ?: 0
-                val guideName = backStackEntry.arguments?.getString("guideName") ?: "Unknown Guide"
-                GuideDetailScreen(vm, guideId, guideName, navController)
-            }
-            composable(route = "Add Guide") {
-                GuideScreen(vm, modifier = modifier)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding) // Correct padding applied here
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = "Guides"
+            ) {
+                composable(route = "Guides") {
+                    vm.loadGuides()
+                    GuideListScreen(vm, navController, Modifier.fillMaxSize())
+                }
+                composable(route = "guideDetail/{guideId}/{guideName}") { backStackEntry ->
+                    val guideId = backStackEntry.arguments?.getString("guideId")?.toInt() ?: 0
+                    val guideName = backStackEntry.arguments?.getString("guideName") ?: "Unknown Guide"
+                    GuideDetailScreen(vm, guideId, guideName, navController)
+                }
+                composable(route = "Add Guide") {
+                    GuideScreen(vm, modifier = Modifier.fillMaxSize())
+                }
             }
         }
     }
+
 }
 
 

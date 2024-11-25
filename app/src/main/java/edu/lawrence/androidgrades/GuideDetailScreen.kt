@@ -35,7 +35,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuideDetailScreen(
@@ -50,17 +49,13 @@ fun GuideDetailScreen(
         vm.getCommentsForGuide(guideId)
     }
 
-
     val commentsList by vm.narrationList.collectAsState()
-
 
     var heading by remember { mutableStateOf("") }
     var narration by remember { mutableStateOf("") }
 
-
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-
 
     Scaffold(
         topBar = {
@@ -85,14 +80,14 @@ fun GuideDetailScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp) // Reduced vertical padding
                 .imePadding()
         ) {
 
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 8.dp) // Reduced padding
             ) {
                 items(commentsList) { comment ->
                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -110,7 +105,6 @@ fun GuideDetailScreen(
                     }
                 }
             }
-
 
             TextField(
                 value = heading,
@@ -131,25 +125,20 @@ fun GuideDetailScreen(
                     .focusRequester(focusRequester),
                 maxLines = 3
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Spacer(modifier = Modifier.height(2.dp)) // Reduced spacer height
 
             Button(
                 onClick = {
                     if (heading.isNotBlank() && narration.isNotBlank()) {
                         vm.addCommentToGuide(guideId, heading, narration)
 
-
                         heading = ""
                         narration = ""
-
 
                         focusManager.clearFocus()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 50.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Add Comment")
             }
